@@ -1,0 +1,37 @@
+services:
+  api:
+    build: .
+    ports: ["8000:8000"]
+    env_file: .env
+    depends_on: [postgres, redis]
+    volumes:
+      - ./app:/app/app
+      - artifacts:/app/artifacts
+
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: discoverse
+      POSTGRES_PASSWORD: discoverse
+      POSTGRES_DB: discoverse
+    volumes: [pgdata:/var/lib/postgresql/data]
+    ports: ["5432:5432"]
+
+  redis:
+    image: redis:7-alpine
+    ports: ["6379:6379"]
+
+  prometheus:
+    image: prom/prometheus:latest
+    volumes: ["./ops/prometheus.yml:/etc/prometheus/prometheus.yml:ro"]
+    ports: ["9090:9090"]
+
+  grafana:
+    image: grafana/grafana:latest
+    ports: ["3000:3000"]
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: admin
+
+volumes:
+  pgdata: {}
+  artifacts: {}

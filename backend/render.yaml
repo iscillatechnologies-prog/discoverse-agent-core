@@ -1,0 +1,53 @@
+# Render Blueprint — one-click deploy for Discoverse AI backend
+# Docs: https://render.com/docs/blueprint-spec
+
+services:
+  - type: web
+    name: discoverse-ai-api
+    runtime: docker
+    rootDir: backend
+    dockerfilePath: ./Dockerfile
+    plan: starter
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: ENVIRONMENT
+        value: production
+      - key: PORT
+        value: 8000
+      - key: JWT_SECRET
+        generateValue: true
+      - key: OPENAI_API_KEY
+        sync: false        # user pastes at deploy time
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: SUPABASE_URL
+        sync: false        # paste your Lovable Cloud URL
+      - key: SUPABASE_ANON_KEY
+        sync: false
+      - key: WEAVIATE_URL
+        sync: false        # optional
+      - key: WEAVIATE_API_KEY
+        sync: false        # optional
+      - key: DATABASE_URL
+        fromDatabase:
+          name: discoverse-pg
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          type: keyvalue
+          name: discoverse-redis
+          property: connectionString
+
+  - type: keyvalue
+    name: discoverse-redis
+    plan: free
+    ipAllowList: []        # only internal services
+
+databases:
+  - name: discoverse-pg
+    plan: free
+    databaseName: discoverse
+    user: discoverse
