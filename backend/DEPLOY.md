@@ -1,54 +1,82 @@
-# Deploy Discoverse AI Backend — Step by Step
+# Deploy Discoverse AI Backend to Railway — No Credit Card Needed
 
-**Audience:** non-technical. No terminal needed. Browser only.
+**Audience:** non-technical. Browser only. ~10 minutes total.
+
+Railway gives you **$5 free credit** every month with **no credit card required**. That's enough to run this backend 24/7 on the smallest plan.
 
 ---
 
-## Part 1 — Send this code to GitHub (one time, ~2 minutes)
+## Part 1 — Push code to GitHub (one time, ~2 min)
 
-1. In Lovable, click the **GitHub** button (top right of the editor) **or** open **Connectors → GitHub → Connect project**.
+1. In Lovable, click the **GitHub** button (top-right) **or** open **Connectors → GitHub → Connect project**.
 2. Click **Authorize Lovable** in the popup.
-3. Pick the GitHub account where the repo should live.
+3. Pick your GitHub account.
 4. Click **Create Repository**.
 
-That's it. Every change Lovable makes (including this `/backend` folder) is now in your GitHub repo automatically.
+Done. The `/backend` folder is now in your GitHub repo.
 
 ---
 
-## Part 2 — Get your AI API keys (~5 minutes)
+## Part 2 — Get your AI API keys (~5 min)
 
-You need at least **one** of these. Get them from the provider's site, copy the key, keep it in a notepad for Part 3.
+You need **at least one**. Copy each key into a notepad for Part 3.
 
-| Key | Where to get it | Required? |
+| Key | Where to get it | Free tier? |
 |---|---|---|
-| `OPENAI_API_KEY` | https://platform.openai.com/api-keys | Recommended |
-| `GEMINI_API_KEY` | https://aistudio.google.com/apikey | Recommended |
+| `GEMINI_API_KEY` | https://aistudio.google.com/apikey | ✅ Yes — start here |
+| `OPENAI_API_KEY` | https://platform.openai.com/api-keys | Paid only |
 | `ANTHROPIC_API_KEY` | https://console.anthropic.com/settings/keys | Optional |
 
-> Tip: Gemini has a generous free tier — start there if you want to test free.
+> **Tip:** Gemini is 100% free for reasonable usage — perfect for testing.
 
 ---
 
-## Part 3 — Deploy on Render (~5 minutes, free tier works)
+## Part 3 — Deploy on Railway (~5 min, no card)
 
-1. Go to https://render.com → **Sign up with GitHub** (use the same account from Part 1).
-2. Click **New +** (top right) → **Blueprint**.
-3. Pick your repo from the list (the one Lovable just created).
-4. Render reads `backend/render.yaml` automatically and shows you:
-   - 1 web service (the API)
-   - 1 Postgres database
-   - 1 Redis instance
-5. Render will ask you to fill in the API keys from Part 2 — paste them in.
-6. Click **Apply**.
+1. Go to https://railway.com → click **Login** → **Login with GitHub**.
+2. Authorize Railway to read your repos.
+3. On the dashboard, click **New Project** → **Deploy from GitHub repo**.
+4. Pick the repo Lovable created in Part 1.
+5. Railway will detect the project. In **Settings → Root Directory**, type: `backend`
+6. Railway reads `backend/railway.json` and starts building the Docker image automatically.
 
-Render takes ~5 minutes to build. When it's green, copy the URL it gives you (e.g. `https://discoverse-ai-api.onrender.com`).
+### Add the database + Redis (free, in same project)
+
+7. In your Railway project, click **+ New** (top right) → **Database** → **Add PostgreSQL**.
+8. Click **+ New** again → **Database** → **Add Redis**.
+
+Railway auto-creates `DATABASE_URL` and `REDIS_URL` variables — but you must link them to your service:
+
+9. Click your **API service** (the one built from your repo) → **Variables** tab → **+ New Variable** → **Add Reference**.
+10. Pick `DATABASE_URL` from the Postgres service. Repeat for `REDIS_URL` from Redis.
+
+### Add your secrets
+
+11. Still in **Variables**, click **+ New Variable** → **Raw Editor** and paste:
+
+```
+ENVIRONMENT=production
+JWT_SECRET=paste-any-long-random-string-here-min-32-chars
+SUPABASE_URL=https://ztllrzlkdnlxjipxmhff.supabase.co
+SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp0bGxyemxrZG5seGppcHhtaGZmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcxMjU1ODMsImV4cCI6MjA5MjcwMTU4M30.zCgciuID9vMYwcoVGmC5mWfGtacctvrwFkJ0NMHoq0k
+GEMINI_API_KEY=paste-from-part-2
+OPENAI_API_KEY=paste-from-part-2-or-leave-empty
+```
+
+Click **Update Variables**. Railway redeploys automatically.
+
+### Get your public URL
+
+12. Click your service → **Settings** → **Networking** → **Generate Domain**.
+13. Copy the URL (e.g. `https://discoverse-ai-production.up.railway.app`).
 
 ---
 
-## Part 4 — Connect your Lovable frontend to the new backend
+## Part 4 — Connect this Lovable app to your live backend
 
-1. In Lovable chat, paste:
-   > Switch the chat panel to use my Render backend at `https://YOUR-URL.onrender.com` instead of the Supabase edge function.
+Paste this into Lovable chat:
+
+> Switch the chat panel to use my Railway backend at `https://YOUR-URL.up.railway.app` instead of the Supabase edge function.
 
 I'll update `src/lib/useChatStream.ts` for you.
 
@@ -56,14 +84,14 @@ I'll update `src/lib/useChatStream.ts` for you.
 
 ## Troubleshooting
 
-**Build fails on Render?**
-- Open the Render service → **Logs** tab → copy the red error → paste it back to me in Lovable chat. I'll fix it.
+**Build fails on Railway?**
+Open the service → **Deployments** tab → click the failed build → copy the red error → paste into Lovable chat.
 
-**API works but agents don't respond?**
-- Check `OPENAI_API_KEY` / `GEMINI_API_KEY` are set in Render → Service → **Environment** tab.
+**App builds but `/health` fails?**
+Make sure both `DATABASE_URL` and `REDIS_URL` are linked as **References** (not typed manually) — they need to point to the Railway-managed Postgres/Redis.
 
-**Want to add the optional Weaviate vector memory?**
-- Sign up at https://console.weaviate.cloud (free sandbox), then add `WEAVIATE_URL` + `WEAVIATE_API_KEY` to Render env.
+**Out of $5 free credit?**
+Railway gives $5 every month free. If you run out, sleep the service (Settings → "Pause") when not testing. Each pause/resume cycle costs $0.
 
-**Free tier sleeps after 15 min of no traffic?**
-- That's Render's free plan. Upgrade to Starter ($7/mo) for always-on.
+**Want vector memory (Weaviate)?**
+Sign up at https://console.weaviate.cloud (free sandbox), then add `WEAVIATE_URL` + `WEAVIATE_API_KEY` to Railway Variables.
