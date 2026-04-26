@@ -1,8 +1,10 @@
-# Deploy Discoverse AI Backend to Railway — No Credit Card Needed
+# Deploy Discoverse AI Backend to Railway — No Credit Card, No Gemini Account Needed
 
 **Audience:** non-technical. Browser only. ~10 minutes total.
 
 Railway gives you **$5 free credit** every month with **no credit card required**. That's enough to run this backend 24/7 on the smallest plan.
+
+This guide uses **Lovable AI** as the model provider — one key, all models (Gemini, GPT-5, Claude), no separate signup.
 
 ---
 
@@ -17,17 +19,15 @@ Done. The `/backend` folder is now in your GitHub repo.
 
 ---
 
-## Part 2 — Get your AI API keys (~5 min)
+## Part 2 — Get your Lovable AI API key (~1 min, free)
 
-You need **at least one**. Copy each key into a notepad for Part 3.
+1. Inside Lovable, open this project.
+2. Open **Connectors** (sidebar) → **Lovable AI** → **Enable** (if not already).
+3. Click **Copy API key**. It looks like `lov_...`.
 
-| Key | Where to get it | Free tier? |
-|---|---|---|
-| `GEMINI_API_KEY` | https://aistudio.google.com/apikey | ✅ Yes — start here |
-| `OPENAI_API_KEY` | https://platform.openai.com/api-keys | Paid only |
-| `ANTHROPIC_API_KEY` | https://console.anthropic.com/settings/keys | Optional |
+That's it — no Google/OpenAI/Anthropic account needed. Lovable AI gives you free monthly usage and routes to Gemini, GPT-5, and Claude through one key.
 
-> **Tip:** Gemini is 100% free for reasonable usage — perfect for testing.
+> **Note:** The `LOVABLE_API_KEY` shown in your Lovable Cloud secrets is the same key — you can copy it from there too.
 
 ---
 
@@ -59,8 +59,7 @@ ENVIRONMENT=production
 JWT_SECRET=paste-any-long-random-string-here-min-32-chars
 SUPABASE_URL=https://ztllrzlkdnlxjipxmhff.supabase.co
 SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp0bGxyemxrZG5seGppcHhtaGZmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcxMjU1ODMsImV4cCI6MjA5MjcwMTU4M30.zCgciuID9vMYwcoVGmC5mWfGtacctvrwFkJ0NMHoq0k
-GEMINI_API_KEY=paste-from-part-2
-OPENAI_API_KEY=paste-from-part-2-or-leave-empty
+LOVABLE_API_KEY=paste-your-lov_-key-from-part-2
 ```
 
 Click **Update Variables**. Railway redeploys automatically.
@@ -90,8 +89,14 @@ Open the service → **Deployments** tab → click the failed build → copy the
 **App builds but `/health` fails?**
 Make sure both `DATABASE_URL` and `REDIS_URL` are linked as **References** (not typed manually) — they need to point to the Railway-managed Postgres/Redis.
 
-**Out of $5 free credit?**
+**Chat says "Lovable AI credits exhausted"?**
+Go to Lovable → Settings → Workspace → Usage → top up. Free tier resets monthly.
+
+**Out of $5 free Railway credit?**
 Railway gives $5 every month free. If you run out, sleep the service (Settings → "Pause") when not testing. Each pause/resume cycle costs $0.
+
+**Want to use your own Gemini/OpenAI key instead?**
+Add `GEMINI_API_KEY` or `OPENAI_API_KEY` to Railway Variables and remove `LOVABLE_API_KEY`. The router will fall back to direct providers automatically.
 
 **Want vector memory (Weaviate)?**
 Sign up at https://console.weaviate.cloud (free sandbox), then add `WEAVIATE_URL` + `WEAVIATE_API_KEY` to Railway Variables.
