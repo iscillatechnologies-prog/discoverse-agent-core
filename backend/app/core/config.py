@@ -15,7 +15,9 @@ class Settings(BaseSettings):
     jwt_secret: str = "dev-secret-change-me"
     jwt_algorithm: str = "HS256"
 
-    # AI
+    # AI — preferred: Lovable AI Gateway (single key, all models)
+    lovable_api_key: str = ""
+    # Optional direct providers (fallback only — not needed if lovable_api_key set)
     openai_api_key: str = ""
     gemini_api_key: str = ""
     anthropic_api_key: str = ""
@@ -31,11 +33,11 @@ class Settings(BaseSettings):
     # CORS
     cors_origins: list[str] = ["*"]
 
-    # Default model preferences
-    default_research_model: str = "gemini-2.0-flash-exp"
-    default_builder_model: str = "gpt-5"
-    default_analyst_model: str = "gemini-2.0-pro-exp"
-    default_assistant_model: str = "gemini-2.0-flash-exp"
+    # Default model preferences (Lovable AI Gateway IDs)
+    default_research_model: str = "google/gemini-2.5-pro"
+    default_builder_model: str = "openai/gpt-5"
+    default_analyst_model: str = "google/gemini-2.5-pro"
+    default_assistant_model: str = "google/gemini-3-flash-preview"
 
 
 @lru_cache
