@@ -19,15 +19,21 @@ Done. The `/backend` folder is now in your GitHub repo.
 
 ---
 
-## Part 2 — Get your Lovable AI API key (~1 min, free)
+## Part 2 — Get your Lovable AI API key (~2 min, free)
 
-1. Inside Lovable, open this project.
-2. Open **Connectors** (sidebar) → **Lovable AI** → **Enable** (if not already).
-3. Click **Copy API key**. It looks like `lov_...`.
+The Lovable AI connector doesn't show a copyable key in its UI. Instead, the `LOVABLE_API_KEY` is auto-created as a **backend secret** when Lovable Cloud is enabled (it already is for this project).
 
-That's it — no Google/OpenAI/Anthropic account needed. Lovable AI gives you free monthly usage and routes to Gemini, GPT-5, and Claude through one key.
+**Option A — Copy from Backend secrets (easiest):**
+1. In Lovable, click **View Backend** (cloud icon in the sidebar, or open the Lovable Cloud panel).
+2. Go to **Edge Functions** → **Secrets** (or **Project Settings → Functions → Secrets**).
+3. Find the row named `LOVABLE_API_KEY`.
+4. Click the **eye icon** (👁) to reveal it, then copy the value. It starts with `lov_...`.
 
-> **Note:** The `LOVABLE_API_KEY` shown in your Lovable Cloud secrets is the same key — you can copy it from there too.
+**Option B — Ask Lovable chat to give it to you:**
+Paste this into Lovable chat and I'll rotate + display the new key for you:
+> Rotate my LOVABLE_API_KEY and show me the new value so I can paste it into Railway.
+
+That's it — no Google/OpenAI/Anthropic account needed. Lovable AI gives you free monthly usage and routes to Gemini, GPT-5, and Claude through that one key.
 
 ---
 
